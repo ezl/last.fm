@@ -18,35 +18,33 @@
     </style>
 
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-    <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+    <script src="http://www.html5canvastutorials.com/libraries/kinetic-v1.0.0.js"></script>
 
     <script type="text/javascript">
       var width = height = 400;
       var centerX = width / 2,
           centerY = height / 2;
 
-      var friendList = [];
-
       function friends(name, img, position) {
-        this.name = name;
-        this.img = img;
-        this.position = position;
+          this.name = name;
+          this.img = img;
+          this.position = position;
       }
 
-      var findFriends = function(user) {
-        // have to implement this to take user arg and pull down the correct xml for that user.
+      var findFriends = function(user){
         var friendList = [];
-        var url = 'friends.xml';
-        $.get(url, function(data) {
-          $(data).find('user').each(function() {
-            var newFriend = new friends($(this).find('name').text(),$(this).find('image[size="medium"]').text(),null);
+        $.get('friends.xml', function(data) {
+          $(data).find('user').each(function(){
+            var newFriend = new friends($(this).find('name').text(),
+                                        $(this).find('image[size="medium"]').text() || null ,
+                                        null);
             friendList.push(newFriend);
           });
         });
         return friendList;
       };
 
-      $(function() {
+      jQuery(function() {
         var ctx = document.getElementById('tutorial').getContext('2d');
         //ctx.fillStyle = "red";
 
@@ -69,29 +67,36 @@
           }
         }
         function displayFriends(user) {
-          var displayLimit = 8;
-          friends = findFriends(user).slice(0, displayLimit);
+          var displayLimit = 12;
 
-          var numFriends = friends.length;
-          numFriends = 7;
+          var friendList = findFriends(user);
+          var numFriends = friendList.length;
+
+          // WTF!!!!!!
+          console.log(friendList);  // I have the friends...
+          console.log(friendList.length); // but it says the length is ZERO (http://www.w3schools.com/jsref/jsref_obj_array.asp)
+          console.log(friendList[0]); // and I can't access elements of this array
+          console.log(friendList); // its really theere right? yep...
 
           for (var i=0; i < numFriends; i++) {
-            var r = 100 // radius, constant
+            var r = 125 // radius, constant
             var theta = 2 * Math.PI * i / numFriends; //angle in radians, inremented for each friend
             var x = centerX + r * Math.cos(theta);
             var y = centerY + r * Math.sin(theta);
-            putImage(x, y);
             drawLine(centerX, centerY, x, y);
+            //putImage(friendList[i].img, x, y);
           }
         }
 
         function displayUser(user) {
           putImage("http://userserve-ak.last.fm/serve/64/622538.jpg", centerX, centerY);
           // get user information from api
-          displayFriends(user);
         }
 
-        displayUser("joe");
+        user = "someusername";
+        displayUser(user);
+        displayFriends(user);
+        foo = findFriends(user);
       });
 
     </script>
