@@ -1,0 +1,72 @@
+<html>
+    <head>
+	<style>
+	    canvas {
+		    display:block;
+		    margin:20px auto;
+		    border:1px solid black;	
+		    height:400px;
+		    width:400px;
+	    }		
+	    
+	    .icon{
+	        border-radius: 100%;
+		-o-border-radius: 100%;
+		-webkit-border-radius: 100%;
+		-moz-border-radius: 100%;
+	    }
+	</style>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+	<script type="text/javascript">
+	    var width = height = 400;
+	    var friendList = [];
+	    
+	    function friends(name, img, position){
+	      this.name = name;
+	      this.img = img;
+	      this.position = position;
+	    }
+	    
+	    $(function(){
+		var ctx = document.getElementById('tutorial').getContext('2d');	
+		//ctx.fillStyle = "red";
+		
+		var img = new Image();		
+		img.src = "http://userserve-ak.last.fm/serve/64/622538.jpg";
+		
+		img.onload = function(){
+		    ctx.drawImage(img,100,100,100,100);	
+		}
+		
+		
+		
+		ctx.beginPath();
+		ctx.moveTo(30,96);
+		ctx.lineTo(70,66);
+		ctx.lineTo(103,76);
+		ctx.lineTo(170,15);
+		ctx.stroke();
+
+		
+		//console.log(img);
+		//ctx.draw(imgObj, XPos, YPos, Width, Height);
+	    });	
+    
+	    var findFriends = function(){
+		$.get('friends.xml', function(data) {
+		  $(data).find('user').each(function(){
+		    var newFriend = new friends($(this).find('name').text(),$(this).find('image[size="medium"]').text(),null);
+		    friendList.push(newFriend);
+		  });
+		});
+	    };
+	    
+	    
+	</script>
+    </head>
+    <body>
+	<canvas id="tutorial" width="400" height="400"></canvas>
+	    
+    </body>
+</html>

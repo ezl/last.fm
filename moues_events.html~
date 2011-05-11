@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<script type="text/javascript">
+	    
+	</script>
+    </head>
+    <body>
+    <a href="javascript:void(null)"
+   onmousedown="return dont(event)" onmouseup="return buttonalert(event)"
+   onclick="return dont(event)" ondblclick="return dont(event)"
+   oncontextmenu="return dont(event)"
+>Click here with various mouse buttons to test</a> 
+	<script language="Javascript"> 
+	function buttonalert(event)
+	{
+	    var button;
+	    if (event.which == null)
+	      button= (event.button < 2) ? "LEFT" :
+			((event.button == 4) ? "MIDDLE" : "RIGHT");
+	    else
+	      button= (event.which < 2) ? "LEFT" :
+			((event.which == 2) ? "MIDDLE" : "RIGHT");
+	    alert(button);
+	    dont(event);
+	}
+	function dont(event)
+	{
+	    if (event.preventDefault)
+		event.preventDefault();
+	    else
+		event.returnValue= false;
+	    return false;
+	}
+	</script>	
+    </body>
+</html>

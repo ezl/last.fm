@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			canvas {
+				display:block;
+				margin:20px auto;
+				border:1px solid black;	
+				height:400px;
+				width:400px;
+			}		
+		</style>
+		<script type="text/javascript">
+			var width = height = 400;
+			var canvas = ctx = false;
+			var frameRate = 1/10;  
+			var frameDelay = frameRate *1000; //ms
+			var loopTimer = false; 
+
+			var ball = {
+				position: {x:width/2, y:0},
+				velocity: {x:0, y:0},
+				mass: 0.1,
+				radius: 15, //1px=1cm
+				resitution: 15
+			};
+			var Cd = 0.47;   // Dimensionless
+			var rho = 1.22; // kg/m^3 density
+			var A = Math.PI * ball.radius * ball.radius;
+			var mouse = {x:0,y:0,isDown:false};
+			
+			function getMousePosition(e){
+				mouse.x = e.pageX - canvas.offsetLeft;
+				mouse.y = e.pageY - canvas.offsetTop;
+			}
+			var mouseDown = function(e){
+				if(e.which == 1){
+					mouse.isDown = true;
+					getMousePosition(e);
+					mouse.isDown = true;
+					ball.position.x = mouse.x;
+					ball.position.y = mouse.y;
+				}
+			}
+			
+			var mouseUp = function(e){
+				if(e.which == 1){
+					mouse.isDown = false;
+					ball.velocity.y = 0;
+					ball.velocity.x = 0;
+				}
+			}
+			// setInterval, setTimeout*funciton, 50) 
+			// clearInterval
+			var setup = function(){
+				
+				canvas = document.getElementById('canvas');
+				
+				// to use all the goodies of canvas
+				ctx = canvas.getContext('2d');
+				
+				canvas.onmousemove = getMousePosition();
+				
+				ctx.fillStyle = 'red';
+				
+				loopTimer = setInterval(loop,frameDelay);			
+			}
+			
+			// Calaulate the ball movement iteratively
+			var loop = function(){
+				if(!mouse.isDown){
+				// Do physics 
+					// Drag force: Fd = 1/2 *Cd * A * rho * v*v
+					// Used Math.abs to make sure the sign is correct
+					var Fx = 0.5 *Cd * A * rho * ball.velocity.x * ball.velocity.x * ball.velocity.x / Math.abs(ball.velocity.x); 
+					var Fy = 0.5 *Cd * A * rho * ball.velocity.y * ball.velocity.y * ball.velocity.y / Math.abs(ball.velocity.y);
+					
+					Fx = (isNaN(Fx) ? 0 : Fx);
+					Fy = (isNaN(Fy) ? 0 : Fy);
+
+					// Calculate accerlation (F = ma)
+					var ax = Fx / ball.mass;
+					var ay = 9.81 + (Fy / ball.mass);
+					// Integrate to get velocity
+					
+					ball.velocity.x += ax*frameRate;
+					ball.velocity.y += ay*frameRate;
+					// Integrate to get position
+					ball.position.x += ball.velocity.x * frameRate*100;
+					ball.position.y += ball.velocity.y * frameRate*100;										
+				}
+				
+				// Handle collisions
+				if(ball.position.y > height - ball.radius){
+					ball.velocity.y *= ball.resitution;
+					ball.position.y = height - ball.radius;
+					//ball.position.y = 
+				}
+				if(ball.position.x > width - ball.radius){
+					ball.velocity.x *= ball.resitution;
+					ball.position.x = width - ball.radius;
+					//ball.position.y = 
+				}			
+				if(ball.position.x < ball.radius){
+					ball.velocity.x *= ball.resitution;
+					ball.position.x = ball.radius;
+				}	
+				// Draw ball
+				ctx.clearRect(0,0,width,height);
+				ctx.beginPath();
+				ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, Math.PI*2, true);				
+				ctx.fill();
+				ctx.closePath();
+
+				if(mouse.isDown){
+					ctx.beginPath();
+					ctx.moveTo(ball.position.x, ball.position.y);
+					ctx.lineTo(mouse.x, mouse.y);
+					ctx.stroke();
+					ctx.closePath();
+				}
+			}
+		</script>
+	</head>
+	<body onLoad="setup();">
+		<canvas id="canvas" height="400" width="400">Get a better browser!</canvas>
+	</body>
+</html>
